@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from sklearn.metrics import accuracy_score, classification_report
 import joblib
 
@@ -21,6 +22,39 @@ if X_test_vectorized.isnull().values.any():
 
 # Make predictions on the test set
 y_pred = model.predict(X_test_vectorized)
+
+# Ensure consistent number of samples
+min_samples = min(len(y_test), len(y_pred))
+y_test = y_test.iloc[:min_samples]
+y_pred = y_pred[:min_samples]
+
+# Convert labels in y_test to integer format
+label_mapping = {'Negative': 0, 'Positive': 1}  # Adjust this based on your actual labels
+y_test = y_test.map(label_mapping).astype(int)
+
+# Check Unique Values
+print("Unique values in y_test:", np.unique(y_test))
+print("Unique values in y_pred:", np.unique(y_pred))
+
+# Verify Data Types
+print("Data type of y_test:", y_test.dtype)
+print("Data type of y_pred:", y_pred.dtype)
+
+# Label Mapping
+print("Label Mapping:", label_mapping)
+
+# Handling Unknown Labels
+unknown_labels_y_test = set(np.unique(y_test)) - set(np.unique(y_pred))
+unknown_labels_y_pred = set(np.unique(y_pred)) - set(np.unique(y_test))
+
+if unknown_labels_y_test or unknown_labels_y_pred:
+    # Implement your strategy for handling unknown labels
+    print("Unknown labels in y_test:", unknown_labels_y_test)
+    print("Unknown labels in y_pred:", unknown_labels_y_pred)
+
+# Check if there is a mix of binary and unknown targets
+if unknown_labels_y_test and unknown_labels_y_pred:
+    raise ValueError("Mix of binary and unknown targets in the labels.")
 
 # Evaluate the model
 accuracy = accuracy_score(y_test, y_pred)
