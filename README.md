@@ -1,1 +1,1 @@
-#LSTM model for Sentimental Analysis
+**LSTM model for Sentimental Analysis**
